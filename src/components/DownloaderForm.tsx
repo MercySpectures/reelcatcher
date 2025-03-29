@@ -3,18 +3,27 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
-import { Clipboard, Download, Loader2, Instagram } from 'lucide-react';
+import { Clipboard, Download, Loader2, Instagram, AlertTriangle } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+// Backend API URL - you would need to replace this with your actual backend URL
+const API_URL = "https://your-backend-url.com/api/download";
 
 const DownloaderForm = () => {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState('');
   const [videoTitle, setVideoTitle] = useState('');
+  const [error, setError] = useState('');
   const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Reset states
+    setError('');
+    setDownloadUrl('');
     
     if (!url.trim()) {
       toast({
@@ -35,26 +44,70 @@ const DownloaderForm = () => {
     }
     
     setIsLoading(true);
-    setDownloadUrl('');
     
     try {
-      // In a real app, this would make an API call to a backend service
-      // that would handle the actual Instagram video processing
-      // For this demo, we'll simulate a successful response after a delay
+      // Make actual API call to the backend service
+      // Note: In production, replace the API_URL with your actual backend URL
+      // For demo purposes, we'll use a mock response
       
-      setTimeout(() => {
-        // This is just a simulation - in a real app, you would get the actual download URL from your backend
-        setDownloadUrl(`${url}`);
+      // If you have the backend running:
+      /*
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        setError(data.error);
+        toast({
+          title: "Error",
+          description: data.error,
+          variant: "destructive"
+        });
+      } else if (data.downloadLink) {
+        setDownloadUrl(data.downloadLink);
         setVideoTitle("Instagram Reel Video");
         toast({
           title: "Success!",
           description: "Video is ready to download",
         });
+      }
+      */
+      
+      // For demo without backend:
+      setTimeout(() => {
+        const mockData = {
+          downloadLink: url,
+          // Uncomment to test error scenario
+          // error: "Could not extract video URL. Try a different reel."
+        };
+        
+        if (mockData.error) {
+          setError(mockData.error);
+          toast({
+            title: "Error",
+            description: mockData.error,
+            variant: "destructive"
+          });
+        } else {
+          setDownloadUrl(mockData.downloadLink);
+          setVideoTitle("Instagram Reel Video");
+          toast({
+            title: "Success!",
+            description: "Video is ready to download",
+          });
+        }
         setIsLoading(false);
       }, 2000);
       
     } catch (error) {
       console.error('Error processing Instagram URL:', error);
+      setError('Failed to process the Instagram URL. Please try again.');
       toast({
         title: "Error",
         description: "Failed to process the Instagram URL. Please try again.",
@@ -80,11 +133,11 @@ const DownloaderForm = () => {
   };
 
   const handleDownload = () => {
-    // In a real app, this would trigger the actual download
-    // For this demo, we'll create an anchor element to simulate download
+    // Create an anchor element to download the video
     const a = document.createElement('a');
     a.href = downloadUrl;
     a.download = "instagram-reel.mp4";
+    a.target = "_blank"; // Open in new tab
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -99,6 +152,7 @@ const DownloaderForm = () => {
     setUrl('');
     setDownloadUrl('');
     setVideoTitle('');
+    setError('');
   };
 
   return (
@@ -142,17 +196,25 @@ const DownloaderForm = () => {
         </Button>
       </form>
 
-      {downloadUrl && (
+      {error && (
+        <Alert variant="destructive" className="mt-6">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {downloadUrl && !error && (
         <div className="mt-6 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
           <div className="flex items-center gap-2 mb-4">
             <Instagram className="h-6 w-6 text-insta-purple" />
             <h3 className="text-lg font-semibold">{videoTitle}</h3>
           </div>
           
-          <div className="mb-4 aspect-video bg-gray-100 rounded flex items-center justify-center">
-            <div className="text-center">
+          <div className="mb-4 aspect-video bg-gray-100 rounded flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-20"></div>
+            <div className="text-center z-10">
               <Instagram className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">Video preview not available in demo</p>
+              <p className="text-gray-500">Your video is ready to download</p>
             </div>
           </div>
           

@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				insta: {
+					purple: '#8E2DE2',
+					pink: '#FF5EB3',
+					blue: '#4D54F8',
+					light: '#F5F5F5',
 				}
 			},
 			borderRadius: {
@@ -84,11 +91,19 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-slow': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.5' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-slow': 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+			},
+			backgroundImage: {
+				'insta-gradient': 'linear-gradient(90deg, #8E2DE2 0%, #4D54F8 50%, #FF5EB3 100%)',
 			}
 		}
 	},

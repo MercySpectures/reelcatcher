@@ -3,12 +3,20 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
-import { Clipboard, Download, Loader2, Instagram, AlertTriangle } from 'lucide-react';
+import { Clipboard, Download, Loader2, Instagram, AlertTriangle, Globe, Server } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
-// Backend API URL - you would need to replace this with your actual backend URL
+// Backend API URL - Replace with your actual backend URL when deployed
 const API_URL = "https://your-backend-url.com/api/download";
+
+// Define response type interface
+interface DownloadResponse {
+  downloadLink?: string;
+  error?: string;
+}
 
 const DownloaderForm = () => {
   const [url, setUrl] = useState('');
@@ -16,6 +24,7 @@ const DownloaderForm = () => {
   const [downloadUrl, setDownloadUrl] = useState('');
   const [videoTitle, setVideoTitle] = useState('');
   const [error, setError] = useState('');
+  const [isDemoMode, setIsDemoMode] = useState(true);
   const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,21 +55,30 @@ const DownloaderForm = () => {
     setIsLoading(true);
     
     try {
-      // Make actual API call to the backend service
-      // Note: In production, replace the API_URL with your actual backend URL
-      // For demo purposes, we'll use a mock response
+      let data: DownloadResponse;
       
-      // If you have the backend running:
-      /*
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
-      
-      const data = await response.json();
+      if (isDemoMode) {
+        // Demo mode - simulate API response
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Randomly fail sometimes to show error handling
+        if (Math.random() > 0.8) {
+          data = { error: "Could not extract video URL. Try a different reel." };
+        } else {
+          data = { downloadLink: url };
+        }
+      } else {
+        // Real API mode - connect to backend
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url }),
+        });
+        
+        data = await response.json();
+      }
       
       if (data.error) {
         setError(data.error);
@@ -77,34 +95,8 @@ const DownloaderForm = () => {
           description: "Video is ready to download",
         });
       }
-      */
       
-      // For demo without backend:
-      setTimeout(() => {
-        const mockData = {
-          downloadLink: url,
-          // Uncomment to test error scenario
-          // error: "Could not extract video URL. Try a different reel."
-        };
-        
-        if (mockData.error) {
-          setError(mockData.error);
-          toast({
-            title: "Error",
-            description: mockData.error,
-            variant: "destructive"
-          });
-        } else {
-          setDownloadUrl(mockData.downloadLink);
-          setVideoTitle("Instagram Reel Video");
-          toast({
-            title: "Success!",
-            description: "Video is ready to download",
-          });
-        }
-        setIsLoading(false);
-      }, 2000);
-      
+      setIsLoading(false);
     } catch (error) {
       console.error('Error processing Instagram URL:', error);
       setError('Failed to process the Instagram URL. Please try again.');
@@ -157,6 +149,20 @@ const DownloaderForm = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto">
+      <div className="flex justify-end mb-2">
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="demo-mode"
+            checked={isDemoMode}
+            onCheckedChange={setIsDemoMode}
+          />
+          <Label htmlFor="demo-mode" className="text-sm text-gray-500 flex items-center gap-1">
+            {isDemoMode ? <Globe className="h-3.5 w-3.5" /> : <Server className="h-3.5 w-3.5" />}
+            {isDemoMode ? "Demo Mode" : "API Mode"}
+          </Label>
+        </div>
+      </div>
+      
       <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-2">
         <div className="relative flex-1">
           <Input

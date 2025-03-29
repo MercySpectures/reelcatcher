@@ -65,7 +65,10 @@ const DownloaderForm = () => {
         if (Math.random() > 0.8) {
           data = { error: "Could not extract video URL. Try a different reel." };
         } else {
-          data = { downloadLink: url };
+          // In demo mode, use a valid MP4 test URL
+          data = { 
+            downloadLink: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4" 
+          };
         }
       } else {
         // Real API mode - connect to backend
@@ -125,18 +128,23 @@ const DownloaderForm = () => {
   };
 
   const handleDownload = () => {
-    // Create an anchor element to download the video
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.download = "instagram-reel.mp4";
-    a.target = "_blank"; // Open in new tab
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    if (!downloadUrl) return;
+    
+    // Create a temporary link element
+    const tempLink = document.createElement('a');
+    tempLink.href = downloadUrl;
+    
+    // Set download attribute with a filename
+    tempLink.setAttribute('download', 'instagram-reel.mp4');
+    
+    // Append to the document body, click it, and remove it
+    document.body.appendChild(tempLink);
+    tempLink.click();
+    document.body.removeChild(tempLink);
     
     toast({
       title: "Download Started",
-      description: "Your video is downloading now. It will be saved to your device.",
+      description: "Your video download has started. Check your downloads folder.",
     });
   };
 

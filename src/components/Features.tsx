@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Shield, Smartphone, Download, Zap } from 'lucide-react';
+import { Shield, Smartphone, Download, Zap, Lock, Clock, Globe, Play } from 'lucide-react';
 
 const Features = () => {
   return (
@@ -11,8 +11,8 @@ const Features = () => {
           SaveClip is an online Instagram Reels video downloader that allows you to download Reels videos in high quality format, completely free and without watermarks.
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
             <div className="text-insta-purple mb-4">
               <Zap className="h-10 w-10" />
             </div>
@@ -22,7 +22,7 @@ const Features = () => {
             </p>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
             <div className="text-insta-purple mb-4">
               <Shield className="h-10 w-10" />
             </div>
@@ -32,7 +32,7 @@ const Features = () => {
             </p>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
             <div className="text-insta-purple mb-4">
               <Download className="h-10 w-10" />
             </div>
@@ -42,13 +42,53 @@ const Features = () => {
             </p>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
             <div className="text-insta-purple mb-4">
               <Smartphone className="h-10 w-10" />
             </div>
             <h3 className="text-lg font-semibold mb-2">All Devices</h3>
             <p className="text-gray-600">
               Works on all devices including smartphones, tablets, and computers, regardless of operating system.
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
+            <div className="text-insta-purple mb-4">
+              <Lock className="h-10 w-10" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No Watermarks</h3>
+            <p className="text-gray-600">
+              Download Reels videos without any additional watermarks or branding. Get the original video quality.
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
+            <div className="text-insta-purple mb-4">
+              <Clock className="h-10 w-10" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Fast Processing</h3>
+            <p className="text-gray-600">
+              Our servers process your requests quickly, so you don't have to wait long for your videos to be ready.
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
+            <div className="text-insta-purple mb-4">
+              <Globe className="h-10 w-10" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Worldwide Access</h3>
+            <p className="text-gray-600">
+              Our service is available globally. You can use SaveClip from anywhere in the world to download Instagram Reels.
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
+            <div className="text-insta-purple mb-4">
+              <Play className="h-10 w-10" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Offline Viewing</h3>
+            <p className="text-gray-600">
+              Download Reels to watch them offline later, without needing an internet connection or Instagram app.
             </p>
           </div>
         </div>

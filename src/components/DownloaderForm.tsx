@@ -3,12 +3,15 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
-import { Clipboard, Download } from 'lucide-react';
+import { Clipboard, Download, Loader2, Instagram } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const DownloaderForm = () => {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState('');
+  const [videoTitle, setVideoTitle] = useState('');
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +35,7 @@ const DownloaderForm = () => {
     }
     
     setIsLoading(true);
+    setDownloadUrl('');
     
     try {
       // In a real app, this would make an API call to a backend service
@@ -41,6 +45,7 @@ const DownloaderForm = () => {
       setTimeout(() => {
         // This is just a simulation - in a real app, you would get the actual download URL from your backend
         setDownloadUrl(`${url}`);
+        setVideoTitle("Instagram Reel Video");
         toast({
           title: "Success!",
           description: "Video is ready to download",
@@ -76,11 +81,24 @@ const DownloaderForm = () => {
 
   const handleDownload = () => {
     // In a real app, this would trigger the actual download
-    // For this demo, we'll just show a success message
+    // For this demo, we'll create an anchor element to simulate download
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = "instagram-reel.mp4";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
     toast({
       title: "Download Started",
       description: "Your video is downloading now. It will be saved to your device.",
     });
+  };
+
+  const handleClear = () => {
+    setUrl('');
+    setDownloadUrl('');
+    setVideoTitle('');
   };
 
   return (
@@ -89,7 +107,7 @@ const DownloaderForm = () => {
         <div className="relative flex-1">
           <Input
             type="text"
-            placeholder="Paste URL | Instagram"
+            placeholder="Paste Instagram Reel URL here"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="w-full py-6 pr-12 text-base rounded-l-md"
@@ -100,6 +118,7 @@ const DownloaderForm = () => {
             size="icon" 
             className="absolute right-2 top-1/2 transform -translate-y-1/2"
             onClick={handlePaste}
+            aria-label="Paste from clipboard"
           >
             <Clipboard className="h-5 w-5 text-gray-500" />
           </Button>
@@ -111,7 +130,7 @@ const DownloaderForm = () => {
         >
           {isLoading ? (
             <div className="flex items-center gap-2">
-              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <Loader2 className="h-4 w-4 animate-spin" />
               <span>Processing...</span>
             </div>
           ) : (
@@ -124,15 +143,36 @@ const DownloaderForm = () => {
       </form>
 
       {downloadUrl && (
-        <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-green-800 mb-2 font-medium">Your video is ready to download!</p>
-          <Button 
-            onClick={handleDownload}
-            className="bg-green-600 hover:bg-green-700 text-white w-full"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Download Video
-          </Button>
+        <div className="mt-6 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
+          <div className="flex items-center gap-2 mb-4">
+            <Instagram className="h-6 w-6 text-insta-purple" />
+            <h3 className="text-lg font-semibold">{videoTitle}</h3>
+          </div>
+          
+          <div className="mb-4 aspect-video bg-gray-100 rounded flex items-center justify-center">
+            <div className="text-center">
+              <Instagram className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-500">Video preview not available in demo</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button 
+              onClick={handleDownload}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Download Video
+            </Button>
+            
+            <Button 
+              onClick={handleClear}
+              variant="outline"
+              className="flex-1"
+            >
+              Clear
+            </Button>
+          </div>
         </div>
       )}
     </div>

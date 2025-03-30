@@ -24,6 +24,19 @@ const DownloaderForm = () => {
   const [error, setError] = useState('');
   const isMobile = useIsMobile();
 
+  // Function to validate and format Instagram URL
+  const formatInstagramUrl = (inputUrl: string): string => {
+    // Clean up URL (remove query parameters, etc.)
+    let cleanUrl = inputUrl.trim().split('?')[0];
+    
+    // Make sure URL has https:// prefix
+    if (!cleanUrl.startsWith('http')) {
+      cleanUrl = 'https://' + cleanUrl;
+    }
+    
+    return cleanUrl;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -51,6 +64,10 @@ const DownloaderForm = () => {
     
     setIsLoading(true);
     
+    // Format the Instagram URL properly before sending to API
+    const formattedUrl = formatInstagramUrl(url);
+    console.log("Sending formatted URL to API:", formattedUrl);
+    
     try {
       // Call the backend API
       const response = await fetch(API_URL, {
@@ -58,10 +75,15 @@ const DownloaderForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url: formattedUrl }),
       });
       
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+      
       const data: DownloadResponse = await response.json();
+      console.log("API Response:", data);
       
       if (data.error) {
         setError(data.error);
@@ -110,30 +132,36 @@ const DownloaderForm = () => {
   const handleDownload = () => {
     if (!downloadUrl) return;
     
-    // Create a hidden iframe to start the download
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = downloadUrl;
-    document.body.appendChild(iframe);
-    
-    // Create a direct download link as backup
-    const tempLink = document.createElement('a');
-    tempLink.href = downloadUrl;
-    tempLink.setAttribute('download', 'instagram-reel.mp4');
-    tempLink.setAttribute('target', '_blank');
-    document.body.appendChild(tempLink);
-    tempLink.click();
-    
-    // Clean up DOM
-    setTimeout(() => {
-      document.body.removeChild(tempLink);
-      document.body.removeChild(iframe);
-    }, 1000);
-    
-    toast({
-      title: "Download Started",
-      description: "Your video download has started. Check your downloads folder.",
-    });
+    try {
+      console.log("Starting download for URL:", downloadUrl);
+      
+      // Direct download approach - force download with download attribute
+      const tempLink = document.createElement('a');
+      tempLink.href = downloadUrl;
+      tempLink.setAttribute('download', 'instagram-reel.mp4');
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      
+      // If the direct approach might fail (common with cross-origin URLs),
+      // try to open the URL in a new tab as fallback
+      setTimeout(() => {
+        if (document.body.contains(tempLink)) {
+          document.body.removeChild(tempLink);
+        }
+      }, 1000);
+      
+      toast({
+        title: "Download Started",
+        description: "Your video download has started. Check your downloads folder.",
+      });
+    } catch (err) {
+      console.error('Download failed:', err);
+      toast({
+        title: "Download Failed",
+        description: "Could not download the video. Try opening the link directly.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleClear = () => {

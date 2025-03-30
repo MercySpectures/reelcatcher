@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
-import { Clipboard, Download, Loader2, Instagram, AlertTriangle } from 'lucide-react';
+import { Clipboard, Download, Loader2, Instagram, AlertTriangle, FolderOpen } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -22,6 +22,7 @@ const DownloaderForm = () => {
   const [downloadUrl, setDownloadUrl] = useState('');
   const [videoTitle, setVideoTitle] = useState('');
   const [error, setError] = useState('');
+  const [customName, setCustomName] = useState('');
   const isMobile = useIsMobile();
 
   // Function to validate and format Instagram URL
@@ -94,7 +95,7 @@ const DownloaderForm = () => {
         });
       } else if (data.downloadLink) {
         setDownloadUrl(data.downloadLink);
-        setVideoTitle("Instagram Reel Video");
+        setVideoTitle(customName ? `${customName}` : "Instagram Reel Video");
         toast({
           title: "Success!",
           description: "Video is ready to download",
@@ -135,18 +136,38 @@ const DownloaderForm = () => {
     try {
       console.log("Starting download for URL:", downloadUrl);
       
-      // Direct download approach - force download with download attribute
+      // Direct download approach with improved file naming
+      const fileName = customName ? `${customName}.mp4` : `instagram_reel_${Date.now()}.mp4`;
+      
+      // Create a download link and force the download
       const tempLink = document.createElement('a');
       tempLink.href = downloadUrl;
-      tempLink.setAttribute('download', 'instagram-reel.mp4');
+      tempLink.setAttribute('download', fileName);
       document.body.appendChild(tempLink);
       tempLink.click();
       
-      // If the direct approach might fail (common with cross-origin URLs),
-      // try to open the URL in a new tab as fallback
+      // Create a backup approach for browsers that don't support the download attribute
       setTimeout(() => {
+        // If the link is still in the document, remove it
         if (document.body.contains(tempLink)) {
           document.body.removeChild(tempLink);
+          
+          // As a fallback, try to fetch the video using a Blob
+          fetch(downloadUrl)
+            .then(response => response.blob())
+            .then(blob => {
+              const blobUrl = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = blobUrl;
+              link.download = fileName;
+              link.click();
+              URL.revokeObjectURL(blobUrl);
+            })
+            .catch(err => {
+              console.error('Fallback download failed:', err);
+              // Final fallback: open in new tab
+              window.open(downloadUrl, '_blank');
+            });
         }
       }, 1000);
       
@@ -169,6 +190,7 @@ const DownloaderForm = () => {
     setDownloadUrl('');
     setVideoTitle('');
     setError('');
+    setCustomName('');
   };
 
   return (
@@ -211,6 +233,19 @@ const DownloaderForm = () => {
           )}
         </Button>
       </form>
+
+      {/* Optional custom filename input */}
+      {!downloadUrl && !error && (
+        <div className="mt-4">
+          <Input
+            type="text"
+            placeholder="Custom filename (optional)"
+            value={customName}
+            onChange={(e) => setCustomName(e.target.value)}
+            className="w-full py-3 text-sm"
+          />
+        </div>
+      )}
 
       {error && (
         <Alert variant="destructive" className="mt-6">

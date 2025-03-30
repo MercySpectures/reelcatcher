@@ -14,6 +14,8 @@ const API_URL = "http://localhost:3001/api/download";
 interface DownloadResponse {
   downloadLink?: string;
   error?: string;
+  message?: string;
+  status?: string;
 }
 
 const DownloaderForm = () => {
@@ -68,6 +70,8 @@ const DownloaderForm = () => {
     // Format the Instagram URL properly before sending to API
     const formattedUrl = formatInstagramUrl(url);
     console.log("Sending formatted URL to API:", formattedUrl);
+
+    const downloadDirectory = './downloads'; // Default directory 
     
     try {
       // Call the backend API
@@ -76,7 +80,11 @@ const DownloaderForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: formattedUrl }),
+        body: JSON.stringify({ 
+          url: formattedUrl,
+          saveDirectory: downloadDirectory,
+          customName: customName || null,
+        }),
       });
       
       if (!response.ok) {
@@ -98,17 +106,28 @@ const DownloaderForm = () => {
         setVideoTitle(customName ? `${customName}` : "Instagram Reel Video");
         toast({
           title: "Success!",
-          description: "Video is ready to download",
+          description: data.message || "Video is ready to download",
         });
+      } else if (data.status === 'success') {
+        // Handle the case where the file was saved on the server
+        toast({
+          title: "Success!",
+          description: data.message || "Video was downloaded successfully!",
+        });
+        // You could provide a link to another endpoint that serves the file
+        if (data.downloadLink) {
+          setDownloadUrl(data.downloadLink);
+          setVideoTitle(customName ? `${customName}` : "Instagram Reel Video");
+        }
       }
       
       setIsLoading(false);
     } catch (error) {
       console.error('Error processing Instagram URL:', error);
-      setError('Failed to process the Instagram URL. Please try again.');
+      setError('Failed to process the Instagram URL. The server might be offline or the Instagram API is rate-limiting requests.');
       toast({
         title: "Error",
-        description: "Failed to process the Instagram URL. Please try again.",
+        description: "Failed to process the Instagram URL. Please try again later.",
         variant: "destructive"
       });
       setIsLoading(false);
@@ -288,6 +307,11 @@ const DownloaderForm = () => {
           </div>
         </div>
       )}
+      
+      <div className="mt-6 text-center text-sm text-gray-500">
+        <p>Note: You'll need a server running the Python script with instaloader installed for this to work.</p>
+        <p className="mt-1">For testing purposes, make sure the Node.js server is running at {API_URL}</p>
+      </div>
     </div>
   );
 };

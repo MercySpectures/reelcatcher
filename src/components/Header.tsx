@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import Logo from './Logo';
-import { Link } from 'react-router-dom';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,18 +19,20 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           <Link to="/" className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors">
-            Instagram Video Downloader
+            Home
           </Link>
-          <Link to="/" className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors">
-            Private Downloader
+          <Link to="/about" className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors">
+            About
           </Link>
-          <Link to="/" className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors">
-            Instagram Downloader
+          <Link to="/contact" className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors">
+            Contact
           </Link>
-          <div className="border-l border-gray-200 h-5 mx-2"></div>
-          <Link to="/" className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors flex items-center gap-1">
-            <Globe className="h-4 w-4" />
-            <span>English</span>
+          <div className="h-4 w-px bg-gray-200" />
+          <Link to="/privacy-policy" className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors">
+            Privacy
+          </Link>
+          <Link to="/terms" className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors">
+            Terms
           </Link>
         </nav>
         
@@ -57,29 +58,36 @@ const Header = () => {
                 className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors py-2 border-b border-gray-100"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Instagram Video Downloader
+                Home
               </Link>
               <Link 
-                to="/" 
+                to="/about" 
                 className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors py-2 border-b border-gray-100"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Private Downloader
+                About
               </Link>
               <Link 
-                to="/" 
+                to="/contact" 
                 className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors py-2 border-b border-gray-100"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Instagram Downloader
+                Contact
               </Link>
+              <div className="h-px bg-gray-200 my-2" />
               <Link 
-                to="/" 
-                className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors py-2 flex items-center gap-2"
+                to="/privacy-policy" 
+                className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors py-2 border-b border-gray-100"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Globe className="h-4 w-4" />
-                <span>English</span>
+                Privacy Policy
+              </Link>
+              <Link 
+                to="/terms" 
+                className="text-sm font-medium text-gray-700 hover:text-insta-purple transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Terms of Service
               </Link>
             </nav>
           </div>

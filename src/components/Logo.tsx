@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Download, Instagram } from 'lucide-react';
@@ -12,7 +11,7 @@ const Logo = () => {
       </div>
       <div className="flex flex-col items-start leading-none">
         <span className="font-bold text-xl bg-clip-text text-transparent bg-insta-gradient">
-          SaveClip
+          Reel Catcher
         </span>
         <span className="text-xs text-gray-500">Instagram Downloader</span>
       </div>

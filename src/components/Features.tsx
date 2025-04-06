@@ -1,24 +1,23 @@
-
 import React from 'react';
-import { Shield, Smartphone, Download, Zap, Lock, Clock, Globe, Play } from 'lucide-react';
+import { Shield, Download, Zap, Lock, Clock, Globe } from 'lucide-react';
 
 const Features = () => {
   return (
-    <div className="py-16 bg-gray-50">
+    <div id="features" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">Best Instagram Reels Video Downloader</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">Why Choose Our Reel Downloader?</h2>
         <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
-          SaveClip is an online Instagram Reels video downloader that allows you to download Reels videos in high quality format, completely free and without watermarks.
+          Download Instagram Reels videos in high quality format, completely free and without any restrictions.
         </p>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
           <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
             <div className="text-insta-purple mb-4">
               <Zap className="h-10 w-10" />
             </div>
             <h3 className="text-lg font-semibold mb-2">Fast & Easy</h3>
             <p className="text-gray-600">
-              Download Instagram Reels quickly with just a few clicks. No registration or software installation is required.
+              Download Instagram Reels instantly with just a few clicks. No registration or software installation needed.
             </p>
           </div>
           
@@ -28,7 +27,7 @@ const Features = () => {
             </div>
             <h3 className="text-lg font-semibold mb-2">100% Safe</h3>
             <p className="text-gray-600">
-              Our service is completely secure. We don't store your data or videos on our servers after download.
+              Our service is completely secure and private. We don't store your data or downloaded videos.
             </p>
           </div>
           
@@ -38,17 +37,7 @@ const Features = () => {
             </div>
             <h3 className="text-lg font-semibold mb-2">High Quality</h3>
             <p className="text-gray-600">
-              Download Instagram Reels videos in the highest available quality without any quality loss.
-            </p>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
-            <div className="text-insta-purple mb-4">
-              <Smartphone className="h-10 w-10" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">All Devices</h3>
-            <p className="text-gray-600">
-              Works on all devices including smartphones, tablets, and computers, regardless of operating system.
+              Download Instagram Reels in their original high quality without any compression or quality loss.
             </p>
           </div>
           
@@ -58,7 +47,7 @@ const Features = () => {
             </div>
             <h3 className="text-lg font-semibold mb-2">No Watermarks</h3>
             <p className="text-gray-600">
-              Download Reels videos without any additional watermarks or branding. Get the original video quality.
+              Get the original video without any additional watermarks or branding overlays.
             </p>
           </div>
           
@@ -66,9 +55,9 @@ const Features = () => {
             <div className="text-insta-purple mb-4">
               <Clock className="h-10 w-10" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Fast Processing</h3>
+            <h3 className="text-lg font-semibold mb-2">Instant Processing</h3>
             <p className="text-gray-600">
-              Our servers process your requests quickly, so you don't have to wait long for your videos to be ready.
+              Our optimized servers process your requests instantly, delivering your videos in seconds.
             </p>
           </div>
           
@@ -76,19 +65,9 @@ const Features = () => {
             <div className="text-insta-purple mb-4">
               <Globe className="h-10 w-10" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Worldwide Access</h3>
+            <h3 className="text-lg font-semibold mb-2">Always Available</h3>
             <p className="text-gray-600">
-              Our service is available globally. You can use SaveClip from anywhere in the world to download Instagram Reels.
-            </p>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
-            <div className="text-insta-purple mb-4">
-              <Play className="h-10 w-10" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Offline Viewing</h3>
-            <p className="text-gray-600">
-              Download Reels to watch them offline later, without needing an internet connection or Instagram app.
+              Access our service 24/7 from anywhere in the world. No restrictions or limitations.
             </p>
           </div>
         </div>

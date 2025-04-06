@@ -1,91 +1,90 @@
-
 import React from 'react';
 import Logo from './Logo';
 import { Link } from 'react-router-dom';
-import { Instagram, Twitter, Facebook, Youtube, Heart } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-100 pt-12 pb-8">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          <div className="space-y-4">
+    <footer className="bg-gray-100 py-12">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
+          {/* Logo and Description */}
+          <div className="md:col-span-4 space-y-4">
             <Logo />
-            <p className="text-gray-600 text-sm">
-              SaveClip is a free online tool that helps you download Instagram Reels videos easily and quickly.
+            <p className="text-gray-600 text-sm max-w-2xl">
+              A free online tool to download Instagram Reels videos in high quality. Fast, secure, and easy to use.
             </p>
-            <div className="flex space-x-4">
-              <Link to="/" className="text-gray-500 hover:text-insta-purple transition-colors">
-                <Instagram size={20} />
-                <span className="sr-only">Instagram</span>
-              </Link>
-              <Link to="/" className="text-gray-500 hover:text-insta-purple transition-colors">
-                <Twitter size={20} />
-                <span className="sr-only">Twitter</span>
-              </Link>
-              <Link to="/" className="text-gray-500 hover:text-insta-purple transition-colors">
-                <Facebook size={20} />
-                <span className="sr-only">Facebook</span>
-              </Link>
-              <Link to="/" className="text-gray-500 hover:text-insta-purple transition-colors">
-                <Youtube size={20} />
-                <span className="sr-only">YouTube</span>
-              </Link>
-            </div>
           </div>
           
-          <div>
-            <h3 className="font-semibold mb-4 text-gray-800">Tools</h3>
+          {/* Quick Links */}
+          <div className="md:col-span-4 md:pl-8">
+            <h3 className="font-semibold mb-4 text-gray-800">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Instagram Downloader</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Reels Downloader</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Story Downloader</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">IGTV Downloader</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Profile Picture Downloader</Link></li>
+              <li>
+                <Link 
+                  to="/" 
+                  className="text-gray-600 hover:text-insta-purple transition-colors text-sm inline-block"
+                >
+                  How to Use
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/about" 
+                  className="text-gray-600 hover:text-insta-purple transition-colors text-sm inline-block"
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/contact" 
+                  className="text-gray-600 hover:text-insta-purple transition-colors text-sm inline-block"
+                >
+                  Contact
+                </Link>
+              </li>
             </ul>
           </div>
-          
-          <div>
-            <h3 className="font-semibold mb-4 text-gray-800">Support</h3>
+
+          {/* Legal Links */}
+          <div className="md:col-span-4 md:pl-8">
+            <h3 className="font-semibold mb-4 text-gray-800">Legal</h3>
             <ul className="space-y-2">
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">FAQ</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Contact Us</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Privacy Policy</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Terms of Service</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">DMCA</Link></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="font-semibold mb-4 text-gray-800">Company</h3>
-            <ul className="space-y-2">
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">About Us</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Blog</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Affiliates</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Careers</Link></li>
-              <li><Link to="/" className="text-gray-600 hover:text-insta-purple transition-colors text-sm">Media</Link></li>
+              <li>
+                <Link 
+                  to="/privacy-policy" 
+                  className="text-gray-600 hover:text-insta-purple transition-colors text-sm inline-block"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/terms" 
+                  className="text-gray-600 hover:text-insta-purple transition-colors text-sm inline-block"
+                >
+                  Terms of Service
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
         
-        <div className="border-t border-gray-200 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-gray-500 mb-4 md:mb-0">© {currentYear} SaveClip. All rights reserved.</p>
+        {/* Bottom Bar */}
+        <div>
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8">
+            <p className="text-sm text-gray-500">
+              © {currentYear} Reel Catcher
+            </p>
+            <span className="text-sm text-gray-500">
+              For personal use only
+            </span>
+          </div>
           
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/" className="text-xs text-gray-500 hover:text-insta-purple transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/" className="text-xs text-gray-500 hover:text-insta-purple transition-colors">
-              Terms of Service
-            </Link>
-            <Link to="/" className="text-xs text-gray-500 hover:text-insta-purple transition-colors">
-              Cookie Policy
-            </Link>
-            <div className="flex items-center text-xs text-gray-500">
-              Made with <Heart className="h-3 w-3 text-red-500 mx-1" /> by SaveClip Team
-            </div>
+          <div className="text-xs text-gray-400 mt-2">
+            Not affiliated with Instagram or Meta
           </div>
         </div>
       </div>

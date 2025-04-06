@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Smartphone, ArrowRight } from 'lucide-react';
@@ -12,7 +11,7 @@ const AppPromotion = () => {
             <div className="inline-block bg-white/20 p-2 rounded-full mb-4">
               <Smartphone className="h-6 w-6" />
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Download the SaveClip app for Android</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Download the Reel Catcher app for Android</h2>
             <p className="text-white/90 max-w-lg mb-6">
               Get the best Instagram video downloader on your phone. Download videos anywhere, anytime with our easy-to-use mobile app.
             </p>
@@ -52,7 +51,7 @@ const AppPromotion = () => {
                 <div className="absolute top-0 w-1/2 h-7 bg-black left-1/4 rounded-b-lg"></div>
                 <div className="h-full w-full bg-gradient-to-b from-purple-100 to-white p-3">
                   <div className="bg-insta-purple text-white h-8 rounded-t-lg flex items-center justify-center font-medium">
-                    SaveClip
+                    Reel Catcher
                   </div>
                   <div className="bg-white rounded-b-lg h-[calc(100%-2rem)] overflow-hidden shadow-inner">
                     <div className="p-3">

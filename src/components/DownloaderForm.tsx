@@ -1,51 +1,40 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
-import { Clipboard, Download, Loader2, Instagram, AlertTriangle, FolderOpen } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Clipboard, Download, Loader2, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Backend API URL - Replace with your actual backend URL when deployed
-const API_URL = "http://localhost:3001/api/download";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api/download";
 
-// Define response type interface
 interface DownloadResponse {
-  downloadLink?: string;
+  downloadUrl?: string;
   error?: string;
   message?: string;
-  status?: string;
 }
 
 const DownloaderForm = () => {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState('');
-  const [videoTitle, setVideoTitle] = useState('');
   const [error, setError] = useState('');
-  const [customName, setCustomName] = useState('');
-  const isMobile = useIsMobile();
 
-  // Function to validate and format Instagram URL
+  const validateInstagramUrl = (url: string): boolean => {
+    const pattern = /^https?:\/\/(?:www\.)?instagram\.com\/(?:reel|p)\/([A-Za-z0-9-_]+)/i;
+    return pattern.test(url);
+  };
+
   const formatInstagramUrl = (inputUrl: string): string => {
-    // Clean up URL (remove query parameters, etc.)
     let cleanUrl = inputUrl.trim().split('?')[0];
-    
-    // Make sure URL has https:// prefix
     if (!cleanUrl.startsWith('http')) {
       cleanUrl = 'https://' + cleanUrl;
     }
-    
     return cleanUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Reset states
     setError('');
-    setDownloadUrl('');
     
     if (!url.trim()) {
       toast({
@@ -56,43 +45,35 @@ const DownloaderForm = () => {
       return;
     }
     
-    if (!url.includes('instagram.com')) {
+    const formattedUrl = formatInstagramUrl(url);
+    
+    if (!validateInstagramUrl(formattedUrl)) {
+      setError('Please enter a valid Instagram Reel URL');
       toast({
         title: "Error",
-        description: "Please enter a valid Instagram URL",
+        description: "Please enter a valid Instagram Reel URL",
         variant: "destructive"
       });
       return;
     }
     
     setIsLoading(true);
-    
-    // Format the Instagram URL properly before sending to API
-    const formattedUrl = formatInstagramUrl(url);
-    console.log("Sending formatted URL to API:", formattedUrl);
+    setError('');
 
-    const downloadDirectory = './downloads'; // Default directory 
-    
     try {
-      // Call the backend API
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          url: formattedUrl,
-          saveDirectory: downloadDirectory,
-          customName: customName || null,
-        }),
+        body: JSON.stringify({ url: formattedUrl }),
       });
       
-      if (!response.ok) {
-        throw new Error(`Server responded with status: ${response.status}`);
-      }
-      
       const data: DownloadResponse = await response.json();
-      console.log("API Response:", data);
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to download video');
+      }
       
       if (data.error) {
         setError(data.error);
@@ -101,120 +82,64 @@ const DownloaderForm = () => {
           description: data.error,
           variant: "destructive"
         });
-      } else if (data.downloadLink) {
-        setDownloadUrl(data.downloadLink);
-        setVideoTitle(customName ? `${customName}` : "Instagram Reel Video");
+      } else if (data.downloadUrl) {
+        // Create a temporary link and trigger download
+        const link = document.createElement('a');
+        link.href = data.downloadUrl;
+        link.setAttribute('download', `instagram_reel_${Date.now()}.mp4`);
+        link.setAttribute('target', '_blank');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
         toast({
           title: "Success!",
-          description: data.message || "Video is ready to download",
+          description: "Your download has started. Please wait a moment.",
         });
-      } else if (data.status === 'success') {
-        // Handle the case where the file was saved on the server
-        toast({
-          title: "Success!",
-          description: data.message || "Video was downloaded successfully!",
-        });
-        // You could provide a link to another endpoint that serves the file
-        if (data.downloadLink) {
-          setDownloadUrl(data.downloadLink);
-          setVideoTitle(customName ? `${customName}` : "Instagram Reel Video");
-        }
+        
+        // Clear the form
+        setUrl('');
       }
-      
-      setIsLoading(false);
     } catch (error) {
-      console.error('Error processing Instagram URL:', error);
-      setError('Failed to process the Instagram URL. The server might be offline or the Instagram API is rate-limiting requests.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to download the Instagram Reel';
+      console.error('Error downloading reel:', error);
+      setError(errorMessage);
       toast({
         title: "Error",
-        description: "Failed to process the Instagram URL. Please try again later.",
+        description: errorMessage,
         variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePaste = () => {
-    navigator.clipboard.readText()
-      .then(text => {
-        setUrl(text);
-      })
-      .catch(err => {
-        console.error('Failed to read clipboard contents: ', err);
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const formattedUrl = formatInstagramUrl(text);
+      setUrl(formattedUrl);
+      
+      if (!validateInstagramUrl(formattedUrl)) {
         toast({
-          title: "Error",
-          description: "Failed to read from clipboard. Please paste the URL manually.",
+          title: "Warning",
+          description: "The pasted text doesn't appear to be a valid Instagram Reel URL",
           variant: "destructive"
         });
-      });
-  };
-
-  const handleDownload = () => {
-    if (!downloadUrl) return;
-    
-    try {
-      console.log("Starting download for URL:", downloadUrl);
-      
-      // Direct download approach with improved file naming
-      const fileName = customName ? `${customName}.mp4` : `instagram_reel_${Date.now()}.mp4`;
-      
-      // Create a download link and force the download
-      const tempLink = document.createElement('a');
-      tempLink.href = downloadUrl;
-      tempLink.setAttribute('download', fileName);
-      document.body.appendChild(tempLink);
-      tempLink.click();
-      
-      // Create a backup approach for browsers that don't support the download attribute
-      setTimeout(() => {
-        // If the link is still in the document, remove it
-        if (document.body.contains(tempLink)) {
-          document.body.removeChild(tempLink);
-          
-          // As a fallback, try to fetch the video using a Blob
-          fetch(downloadUrl)
-            .then(response => response.blob())
-            .then(blob => {
-              const blobUrl = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = blobUrl;
-              link.download = fileName;
-              link.click();
-              URL.revokeObjectURL(blobUrl);
-            })
-            .catch(err => {
-              console.error('Fallback download failed:', err);
-              // Final fallback: open in new tab
-              window.open(downloadUrl, '_blank');
-            });
-        }
-      }, 1000);
-      
-      toast({
-        title: "Download Started",
-        description: "Your video download has started. Check your downloads folder.",
-      });
+      }
     } catch (err) {
-      console.error('Download failed:', err);
+      console.error('Failed to read clipboard contents:', err);
       toast({
-        title: "Download Failed",
-        description: "Could not download the video. Try opening the link directly.",
+        title: "Error",
+        description: "Failed to read from clipboard. Please paste the URL manually.",
         variant: "destructive"
       });
     }
-  };
-
-  const handleClear = () => {
-    setUrl('');
-    setDownloadUrl('');
-    setVideoTitle('');
-    setError('');
-    setCustomName('');
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-2">
+    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6">
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
           <Input
             type="text"
@@ -222,6 +147,7 @@ const DownloaderForm = () => {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="w-full py-6 pr-12 text-base rounded-l-md"
+            disabled={isLoading}
           />
           <Button 
             type="button" 
@@ -229,6 +155,7 @@ const DownloaderForm = () => {
             size="icon" 
             className="absolute right-2 top-1/2 transform -translate-y-1/2"
             onClick={handlePaste}
+            disabled={isLoading}
             aria-label="Paste from clipboard"
           >
             <Clipboard className="h-5 w-5 text-gray-500" />
@@ -236,7 +163,7 @@ const DownloaderForm = () => {
         </div>
         <Button 
           type="submit" 
-          className="bg-insta-blue hover:bg-insta-blue/90 text-white font-medium py-6 px-8 rounded-r-md transition-all duration-200"
+          className="bg-insta-blue hover:bg-insta-blue/90 text-white font-medium py-6 px-8 rounded-r-md transition-all duration-200 min-w-[140px]"
           disabled={isLoading}
         >
           {isLoading ? (
@@ -253,65 +180,12 @@ const DownloaderForm = () => {
         </Button>
       </form>
 
-      {/* Optional custom filename input */}
-      {!downloadUrl && !error && (
-        <div className="mt-4">
-          <Input
-            type="text"
-            placeholder="Custom filename (optional)"
-            value={customName}
-            onChange={(e) => setCustomName(e.target.value)}
-            className="w-full py-3 text-sm"
-          />
-        </div>
-      )}
-
       {error && (
-        <Alert variant="destructive" className="mt-6">
+        <Alert variant="destructive" className="mt-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-
-      {downloadUrl && !error && (
-        <div className="mt-6 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
-          <div className="flex items-center gap-2 mb-4">
-            <Instagram className="h-6 w-6 text-insta-purple" />
-            <h3 className="text-lg font-semibold">{videoTitle}</h3>
-          </div>
-          
-          <div className="mb-4 aspect-video bg-gray-100 rounded flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 opacity-20"></div>
-            <div className="text-center z-10">
-              <Instagram className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-500">Your video is ready to download</p>
-            </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button 
-              onClick={handleDownload}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Download Video
-            </Button>
-            
-            <Button 
-              onClick={handleClear}
-              variant="outline"
-              className="flex-1"
-            >
-              Clear
-            </Button>
-          </div>
-        </div>
-      )}
-      
-      <div className="mt-6 text-center text-sm text-gray-500">
-        <p>Note: You'll need a server running the Python script with instaloader installed for this to work.</p>
-        <p className="mt-1">For testing purposes, make sure the Node.js server is running at {API_URL}</p>
-      </div>
     </div>
   );
 };

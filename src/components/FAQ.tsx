@@ -1,63 +1,62 @@
-
 import React from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Collapse } from 'antd';
+import type { CollapseProps } from 'antd';
 
-const FAQ = () => {
+const FAQ: React.FC = () => {
+  const faqs = [
+    {
+      question: "How do I download Instagram reels using Reel Catcher?",
+      answer: "It's simple! Just copy the URL of the Instagram reel you want to download, paste it into our downloader, and click the download button. Your reel will be ready to download in seconds."
+    },
+    {
+      question: "Is it free to use Reel Catcher?",
+      answer: "Yes, Reel Catcher is completely free to use. There are no hidden fees or subscriptions required."
+    },
+    {
+      question: "What is the quality of downloaded reels?",
+      answer: "We always download reels in the highest available quality provided by Instagram. The exact quality may vary depending on the original upload quality."
+    },
+    {
+      question: "Do I need to create an account to use Reel Catcher?",
+      answer: "No, you don't need to create an account or register to use our service. Just paste the URL and download!"
+    },
+    {
+      question: "Is it legal to download Instagram reels?",
+      answer: "Downloading reels for personal use is generally acceptable. However, you should respect copyright laws and Instagram's terms of service. Always get permission before using someone else's content."
+    },
+    {
+      question: "Why isn't my reel downloading?",
+      answer: "This could be due to several reasons: the reel might be from a private account, the URL might be incorrect, or the content might have been removed. Make sure you're using a valid URL from a public account."
+    },
+    {
+      question: "Do you store the downloaded reels?",
+      answer: "No, we don't store any downloaded reels on our servers. Files are automatically deleted after you download them."
+    },
+    {
+      question: "Can I download multiple reels at once?",
+      answer: "Currently, we support downloading one reel at a time to ensure the best performance and quality for all users."
+    },
+    {
+      question: "Which browsers are supported?",
+      answer: "Reel Catcher works on all modern browsers including Chrome, Firefox, Safari, and Edge."
+    },
+    {
+      question: "Is my information safe when using Reel Catcher?",
+      answer: "Yes, we take privacy seriously. We don't collect any personal information beyond basic usage statistics, and we don't store downloaded content."
+    }
+  ];
+
+  const items: CollapseProps['items'] = faqs.map((faq, index) => ({
+    key: index,
+    label: <span className="font-semibold">{faq.question}</span>,
+    children: <p className="text-gray-700">{faq.answer}</p>,
+    className: "text-base"
+  }));
+
   return (
-    <div className="py-16 container mx-auto px-4">
-      <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
-      
-      <div className="max-w-3xl mx-auto">
-        <Accordion type="single" collapsible className="space-y-4">
-          <AccordionItem value="item-1" className="border rounded-lg px-4">
-            <AccordionTrigger className="text-left font-medium py-4">How to download Instagram Reels videos?</AccordionTrigger>
-            <AccordionContent className="pb-4 text-gray-600">
-              <ol className="list-decimal list-inside space-y-2">
-                <li>Open Instagram and find the Reel you want to download</li>
-                <li>Tap the share button (three dots) and select "Copy Link"</li>
-                <li>Return to SaveClip and paste the link into the input field</li>
-                <li>Click the "Download" button</li>
-                <li>Once processed, click "Download Video" to save to your device</li>
-              </ol>
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="item-2" className="border rounded-lg px-4">
-            <AccordionTrigger className="text-left font-medium py-4">Is SaveClip free to use?</AccordionTrigger>
-            <AccordionContent className="pb-4 text-gray-600">
-              Yes, SaveClip is completely free to use. You can download Instagram Reels videos without paying anything. There are no hidden fees or subscription costs.
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="item-3" className="border rounded-lg px-4">
-            <AccordionTrigger className="text-left font-medium py-4">Do I need to create an account?</AccordionTrigger>
-            <AccordionContent className="pb-4 text-gray-600">
-              No, SaveClip doesn't require any registration or account creation. You can start downloading Instagram Reels videos right away without signing up.
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="item-4" className="border rounded-lg px-4">
-            <AccordionTrigger className="text-left font-medium py-4">What quality are the downloaded videos?</AccordionTrigger>
-            <AccordionContent className="pb-4 text-gray-600">
-              SaveClip downloads Instagram Reels videos in the highest available quality. The quality of the downloaded video will match the original quality of the Reel.
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="item-5" className="border rounded-lg px-4">
-            <AccordionTrigger className="text-left font-medium py-4">Is it legal to download Instagram Reels?</AccordionTrigger>
-            <AccordionContent className="pb-4 text-gray-600">
-              SaveClip is designed for personal use only. Please respect copyright laws and the content creator's rights. Do not distribute or use downloaded content commercially without permission from the owner.
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="item-6" className="border rounded-lg px-4">
-            <AccordionTrigger className="text-left font-medium py-4">Which devices does SaveClip support?</AccordionTrigger>
-            <AccordionContent className="pb-4 text-gray-600">
-              SaveClip works on all devices including smartphones (Android, iPhone), tablets, and computers (Windows, Mac, Linux). No app installation is required - just use your web browser.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <h2 className="text-3xl font-bold mb-6">Frequently Asked Questions</h2>
+      <Collapse defaultActiveKey={['0']} items={items} className="bg-white shadow-sm rounded-lg" />
     </div>
   );
 };

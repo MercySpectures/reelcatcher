@@ -1,10 +1,8 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import HowToUse from '@/components/HowToUse';
 import Features from '@/components/Features';
-import AppPromotion from '@/components/AppPromotion';
 import FAQ from '@/components/FAQ';
 import Disclaimer from '@/components/Disclaimer';
 import Footer from '@/components/Footer';
@@ -17,7 +15,6 @@ const Index = () => {
         <Hero />
         <HowToUse />
         <Features />
-        <AppPromotion />
         <FAQ />
         <Disclaimer />
       </main>

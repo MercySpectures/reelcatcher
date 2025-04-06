@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Shield } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 const Disclaimer = () => {
   return (
@@ -9,18 +8,18 @@ const Disclaimer = () => {
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-start gap-4">
             <div className="text-amber-500 shrink-0">
-              <Shield className="h-8 w-8" />
+              <AlertTriangle className="h-8 w-8" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2">Important Disclaimer</h3>
+              <h3 className="text-lg font-semibold mb-2">Legal Disclaimer</h3>
               <p className="text-gray-600 text-sm">
-                With SaveClip, you can download any Instagram content (Videos, Photos, Reels, Story, IGTV). We will continuously upgrade to bring you the best experience! Please share this tool with friends and family. Thank you!
+                This tool is provided for personal use only. By using this service, you agree to download content only from public Instagram Reels that you have the right to access and download.
               </p>
               <p className="text-gray-600 text-sm mt-2">
-                Our download tool is designed to assist you in downloading videos and images posted by your own account. However, we reserve the right not to provide the service if you use this tool to violate the privacy and materials of others!
+                Please respect copyright laws and content creators' rights. Do not use downloaded content for commercial purposes without proper authorization from the content owner.
               </p>
-              <p className="text-gray-700 text-sm mt-4 font-medium">
-                Read our Terms of Service <a href="#" className="text-insta-purple underline">here</a>
+              <p className="text-gray-600 text-sm mt-2">
+                We are not affiliated with Instagram or Meta. All trademarks and brand names belong to their respective owners.
               </p>
             </div>
           </div>

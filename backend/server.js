@@ -6,6 +6,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
+import morgan from 'morgan';
+import bytes from 'bytes';
 
 // Load environment variables
 dotenv.config();
@@ -14,10 +17,36 @@ const app = express();
 const port = process.env.PORT || 3001;
 const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 const API_URL = process.env.API_URL || `http://localhost:${port}`;
+const MAX_FILE_SIZE = bytes('100mb'); // Maximum file size limit
 
 // Get current directory name (equivalent to __dirname in CommonJS)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Create logs directory if it doesn't exist
+const logsDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir);
+}
+
+// Create a write stream for logs
+const accessLogStream = fs.createWriteStream(
+  path.join(logsDir, 'access.log'),
+  { flags: 'a' }
+);
+
+// Setup request logging
+app.use(morgan('combined', { stream: accessLogStream }));
+app.use(morgan('dev')); // Console logging in development
+
+// Rate limiting configuration
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Enable CORS with proper configuration
 const allowedOrigins = [
@@ -41,6 +70,10 @@ app.use(cors({
   methods: ['GET', 'POST'],
   credentials: true
 }));
+
+// Apply rate limiting to all requests
+app.use(limiter);
+
 app.use(bodyParser.json());
 
 // Cleanup function for downloaded files
@@ -92,25 +125,67 @@ function isValidInstagramUrl(url) {
   return pattern.test(url);
 }
 
-app.post('/api/download', async (req, res) => {
-  const { url } = req.body;
+// Add error handling middleware before routes
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(err.status || 500).json({
+    error: process.env.NODE_ENV === 'production' 
+      ? 'Internal server error' 
+      : err.message
+  });
+});
 
-  if (!url) {
-    return res.status(400).json({ error: 'URL is required' });
-  }
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
 
-  if (!isValidInstagramUrl(url)) {
-    return res.status(400).json({ error: 'Invalid Instagram URL. Please provide a valid Instagram reel URL.' });
-  }
-
-  // Check if Python script exists
-  const pythonScriptPath = path.join(__dirname, 'download_reel.py');
-  if (!fs.existsSync(pythonScriptPath)) {
-    console.error('Python script not found:', pythonScriptPath);
-    return res.status(500).json({ error: 'Download script not found' });
-  }
-
+// Update the disk space check
+const checkDiskSpace = () => {
   try {
+    // Use the drive where the project is located (E:)
+    const drive = 'E:';
+    const { execSync } = require('child_process');
+    const output = execSync(`wmic logicaldisk where DeviceID="${drive}" get FreeSpace`).toString();
+    const freeSpace = parseInt(output.split('\n')[1].trim());
+    // Reduce the required space to 10MB instead of 50MB
+    const MIN_REQUIRED_SPACE = 10 * 1024 * 1024; // 10MB in bytes
+    console.log(`Available space on ${drive}: ${freeSpace / (1024 * 1024)}MB`);
+    return freeSpace >= MIN_REQUIRED_SPACE;
+  } catch (error) {
+    console.error('Error checking disk space:', error);
+    // If we can't check the space, assume there's enough
+    return true;
+  }
+};
+
+app.post('/api/download', async (req, res) => {
+  try {
+    const { url } = req.body;
+
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+
+    if (!isValidInstagramUrl(url)) {
+      return res.status(400).json({ error: 'Invalid Instagram URL. Please provide a valid Instagram reel URL.' });
+    }
+
+    // Check if Python script exists
+    const pythonScriptPath = path.join(__dirname, 'download_reel.py');
+    if (!fs.existsSync(pythonScriptPath)) {
+      console.error('Python script not found:', pythonScriptPath);
+      return res.status(500).json({ error: 'Download script not found' });
+    }
+
+    // Check available disk space with more detailed error message
+    if (!checkDiskSpace()) {
+      return res.status(507).json({ 
+        error: 'Insufficient storage space. Please free up at least 10MB of disk space and try again.' 
+      });
+    }
+
     // Check if Python is available
     const pythonVersionCheck = spawn('python', ['--version']);
     let pythonError = false;
@@ -193,18 +268,8 @@ app.post('/api/download', async (req, res) => {
       });
     });
   } catch (error) {
-    console.error('Server error:', error);
-    if (!res.headersSent) {
-      res.status(500).json({ error: 'Internal server error. Please try again later.' });
-    }
-  }
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  if (!res.headersSent) {
-    res.status(500).json({ error: 'Something went wrong! Please try again later.' });
+    console.error('Error in download endpoint:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -237,4 +302,13 @@ process.on('SIGINT', () => {
   console.log('SIGINT received. Cleaning up...');
   cleanupDownloadsDir();
   process.exit(0);
+});
+
+// Add health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });

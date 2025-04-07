@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: reel-catcher-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: APP_URL
+        value: https://reelcatcher.fun
+      - key: API_URL
+        value: https://api.reelcatcher.fun
+      - key: NODE_ENV
+        value: production
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: MAX_FILE_SIZE
+        value: 100mb 
